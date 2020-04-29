@@ -672,6 +672,22 @@ int getClientStateTcp(const uint8_t command[], uint8_t response[])
   return 6;
 }
 
+int handshakeTLS(const uint8_t command[], uint8_t response[])
+{
+  uint8_t socket = command[4];
+
+  response[2] = 1; // number of parameters
+  response[3] = 1; // parameter 1 length
+
+  if (tcpClients[socket].handshakeTLS() == 1) {
+    response[4] = 1;
+  } else {
+    response[4] = 0;
+  }
+
+  return 6;
+}
+
 int disconnect(const uint8_t command[], uint8_t response[])
 {
   response[2] = 1; // number of parameters
@@ -1126,7 +1142,7 @@ const CommandHandlerType commandHandlers[] = {
   disconnect, NULL, getIdxRSSI, getIdxEnct, reqHostByName, getHostByName, startScanNetworks, getFwVersion, NULL, sendUDPdata, getRemoteData, getTime, getIdxBSSID, getIdxChannel, ping, getSocket,
 
   // 0x40 -> 0x4f
-  setEnt, NULL, NULL, NULL, sendDataTcp, getDataBufTcp, insertDataBuf, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+  setEnt, NULL, NULL, NULL, sendDataTcp, getDataBufTcp, insertDataBuf, handshakeTLS, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 
   // 0x50 -> 0x5f
   setPinMode, setDigitalWrite, setAnalogWrite,

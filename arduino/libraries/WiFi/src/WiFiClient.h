@@ -20,6 +20,12 @@
 #ifndef WIFICLIENT_H
 #define WIFICLIENT_H
 
+#include <mbedtls/net.h>
+#include <mbedtls/ssl.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/error.h>
+
 #include <Arduino.h>
 // #include <Client.h>
 // #include <IPAddress.h>
@@ -49,6 +55,7 @@ public:
 
   virtual /*IPAddress*/uint32_t remoteIP();
   virtual uint16_t remotePort();
+  virtual int handshakeTLS();
 
   // using Print::write;
 
@@ -59,6 +66,20 @@ protected:
 
 private:
   int _socket;
+  int _peek;
+  bool _connected;
+  bool _sslON;
+  bool _sni;
+
+  const char *_hostSNI;
+  static const char* ROOT_CAs;
+  mbedtls_entropy_context _entropyContext;
+  mbedtls_ctr_drbg_context _ctrDrbgContext;
+  mbedtls_ssl_context _sslContext;
+  mbedtls_ssl_config _sslConfig;
+  mbedtls_x509_crt _caCrt;
+  
+  SemaphoreHandle_t _mbedMutex;
 };
 
 #endif // WIFICLIENT_H
